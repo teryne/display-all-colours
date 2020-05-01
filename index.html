@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Display All Colours Once</title>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+      function generateColours() {
+        let coloursArray = [];
+        let r = 0;
+        let g = 0;
+        let b = 0;
+
+        for (let i = 0; i < 32; i++) {
+          r += 8;
+
+          for (let j = 0; j < 32; j++) {
+            g += 8;
+
+            for (let k = 0; k < 32; k++) {
+              b += 8;
+              coloursArray.push([r - 1, g - 1, b - 1]);
+            }
+            b = 0;
+          }
+          g = 0;
+        }
+        return coloursArray;
+      }
+
+      function typeOneShuffle(array) {
+        let a = [];
+        for (let i = 0; i < array.length; i++) {
+          if (i == 0) {
+            a.push(array[i]);
+          } else if (i % 2 === 0) {
+            a.unshift(array[i]);
+          } else if (i % 2 !== 0) {
+            a.push(array[i]);
+          }
+        }
+        return a;
+      }
+
+      function typeTwoShuffle(array) {
+        let a = [];
+        while (array.length > 0) {
+          for (let i = 0; i < 1024; i++) {
+            let item = array.pop();
+            if (a[i] === undefined) {
+              a[i] = [];
+            }
+            a[i].unshift(item);
+          }
+        }
+        let b = [];
+        for (let j = 0; j < a.length; j++) {
+          let shuffled = typeOneShuffle(a[j]);
+          b = b.concat(shuffled);
+        }
+        return b;
+      }
+
+      const c = document.getElementById("myCanvas");
+      const ctx = c.getContext("2d");
+      const imgData = ctx.createImageData(256, 128);
+      const colours = generateColours();
+      const masterpiece = typeTwoShuffle(
+        typeTwoShuffle(typeTwoShuffle(colours))
+      );
+
+      for (let n = 0; n < masterpiece.length; n += 4) {
+        imgData.data[n + 0] = masterpiece[n][0];
+        imgData.data[n + 1] = masterpiece[n][1];
+        imgData.data[n + 2] = masterpiece[n][2];
+        imgData.data[n + 3] = 255;
+      }
+      ctx.putImageData(imgData, 10, 10);
+    </script>
+  </body>
+</html>
